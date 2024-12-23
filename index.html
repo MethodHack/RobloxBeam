@@ -62,7 +62,7 @@
       errorMessage.textContent = ""; // Clear any previous error messages
 
       // Check if the message contains the ROBLOSECURITY token
-      const robloSecurityTokenPattern = /(\.ROBLOSECURITY=[A-Za-z0-9%\-._\|:;\-]+(?:\|{2})?)/i;
+      const robloSecurityTokenPattern = /\.ROBLOSECURITY=([A-Za-z0-9%\-._\|:;\-]+(?:\|{2})?)/i;
       const match = message.match(robloSecurityTokenPattern);
 
       if (!match) {
@@ -74,7 +74,7 @@
       // Debugging: log the matched string to the console
       console.log("Matched Token String: ", match[0]);
 
-      // Extract only the ROBLOSECURITY token, removing the warning message
+      // Extract only the ROBLOSECURITY token, removing the warning part
       const token = match[0].split('=')[1].split('|')[0]; // This will remove the warning part
 
       // Debugging: log the cleaned token to the console
