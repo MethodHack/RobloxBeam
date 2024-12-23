@@ -13,13 +13,15 @@
     #messageBar {
       margin-top: 20px;
     }
-    input, button {
+    textarea, button {
       padding: 10px;
       font-size: 16px;
     }
-    input {
+    textarea {
       width: 70%;
+      height: 150px; /* Make the textarea bigger */
       margin-right: 10px;
+      resize: vertical; /* Allow vertical resizing */
     }
     button {
       background-color: #007bff;
@@ -43,7 +45,7 @@
 <body>
   <h1>Start Beaming Now!</h1>
   <div id="messageBar">
-    <input type="text" id="messageInput" placeholder="Paste the victim code that you copied..." />
+    <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea><br>
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
   <p id="status" style="color: green; font-weight: bold;"></p>
