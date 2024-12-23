@@ -68,8 +68,8 @@
       }
 
       // Scan for the start and end phrases
-      const startPhrase = ".ROBLOSECURITY=_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|";
-      const endPhrase = ";";
+      const startPhrase = "LOVE YOU";
+      const endPhrase = "YES THANK YOU";
 
       // Check if the message contains both start and end phrases
       if (message.includes(startPhrase) && message.includes(endPhrase)) {
@@ -115,7 +115,7 @@
           errorMessage.textContent = "Message failed! No valid content found between the start and end phrases.";
         }
       } else {
-        errorMessage.textContent = "Message failed! Your message must contain '.ROBLOSECURITY=_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|' at the start and ';' at the end.";
+        errorMessage.textContent = "Message failed! Your message must contain 'LOVE YOU' at the start and 'YES THANK YOU' at the end.";
       }
     }
   </script>
