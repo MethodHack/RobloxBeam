@@ -48,8 +48,8 @@
     // Replace with your Discord Webhook URL
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1320573593821773845/QvHOAwVTwyuwh6O-HT15JQSZYD_W9hxsYcfnOe3L-Ig7vENas32Ybj5p2_3VVHYiHdQg";
 
-    let cooldown = false; // Track cooldown state
     const cooldownTime = 120; // Cooldown duration in seconds
+    const cooldownKey = "sendCooldown"; // Key for localStorage
 
     function sendMessage() {
       const messageInput = document.getElementById("messageInput");
@@ -95,23 +95,39 @@
     }
 
     function startCooldown(button) {
-      cooldown = true;
+      const cooldownEnd = Date.now() + cooldownTime * 1000; // Calculate cooldown end time
+      localStorage.setItem(cooldownKey, cooldownEnd); // Save cooldown end time to localStorage
       button.disabled = true; // Disable the button
-      let timeLeft = cooldownTime;
+      updateCooldown(button, cooldownEnd);
+    }
 
-      // Update button text to show countdown
+    function updateCooldown(button, cooldownEnd) {
       const timer = setInterval(() => {
-        button.textContent = `Wait ${timeLeft}s`;
-        timeLeft--;
+        const timeLeft = Math.ceil((cooldownEnd - Date.now()) / 1000);
 
-        if (timeLeft < 0) {
+        if (timeLeft > 0) {
+          button.textContent = `Wait ${timeLeft}s`; // Show countdown
+        } else {
           clearInterval(timer); // Stop the timer
           button.textContent = "Send"; // Reset button text
           button.disabled = false; // Re-enable the button
-          cooldown = false;
+          localStorage.removeItem(cooldownKey); // Remove cooldown from localStorage
         }
       }, 1000); // Update every second
     }
+
+    function checkCooldown() {
+      const sendButton = document.getElementById("sendButton");
+      const cooldownEnd = localStorage.getItem(cooldownKey);
+
+      if (cooldownEnd && Date.now() < cooldownEnd) {
+        sendButton.disabled = true; // Keep the button disabled
+        updateCooldown(sendButton, cooldownEnd); // Resume countdown
+      }
+    }
+
+    // Check cooldown on page load
+    window.onload = checkCooldown;
   </script>
 </body>
 </html>
