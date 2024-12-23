@@ -34,6 +34,10 @@
     button:hover:not(:disabled) {
       background-color: #0056b3;
     }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -43,6 +47,7 @@
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
   <p id="status" style="color: green; font-weight: bold;"></p>
+  <p id="errorMessage" class="error"></p>
 
   <script>
     // Replace with your Discord Webhook URL
@@ -50,14 +55,19 @@
 
     const cooldownTime = 120; // Cooldown duration in seconds
     const cooldownKey = "sendCooldown"; // Key for localStorage
+    const minMessageLength = 1000; // Minimum message length
 
     function sendMessage() {
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
+      const errorMessage = document.getElementById("errorMessage");
       const message = messageInput.value;
 
-      if (!message) {
-        alert("Please enter a message.");
+      errorMessage.textContent = ""; // Clear any previous error messages
+
+      // Check if the message meets the minimum length requirement
+      if (message.length < minMessageLength) {
+        errorMessage.textContent = `Message failed! Your message must be at least ${minMessageLength} characters long.`;
         return;
       }
 
