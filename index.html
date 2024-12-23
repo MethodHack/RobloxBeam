@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Bar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #messageBar {
+      margin-top: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    input {
+      width: 70%;
+      margin-right: 10px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Send a Message</h1>
+  <div id="messageBar">
+    <input type="text" id="messageInput" placeholder="Type your message here..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  <p id="status" style="color: green; font-weight: bold;"></p>
+
+  <script>
+    // Replace with your Discord Webhook URL
+    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1320573593821773845/QvHOAwVTwyuwh6O-HT15JQSZYD_W9hxsYcfnOe3L-Ig7vENas32Ybj5p2_3VVHYiHdQg";
+
+    function sendMessage() {
+      const messageInput = document.getElementById("messageInput");
+      const message = messageInput.value;
+
+      if (!message) {
+        alert("Please enter a message.");
+        return;
+      }
+
+      // Send the message to Discord webhook
+      fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: message,
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById("status").textContent = "Message sent successfully!";
+            messageInput.value = ""; // Clear the input
+          } else {
+            throw new Error("Failed to send the message.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("status").textContent = "Failed to send the message.";
+        });
+    }
+  </script>
+</body>
+</html>
