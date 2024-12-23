@@ -19,7 +19,7 @@
     }
     textarea {
       width: 70%;
-      height: 150px; /* Make the textarea bigger */
+      height: 200px; /* Make the textarea bigger */
       margin-right: 10px;
       resize: vertical; /* Allow vertical resizing */
     }
@@ -74,13 +74,12 @@
       const endPhrase = "YES THANK YOU";
 
       // Check if the message contains both start and end phrases
-      if (message.includes(startPhrase) && message.includes(endPhrase)) {
-        // Extract the part of the message between the phrases
-        const startIndex = message.indexOf(startPhrase) + startPhrase.length;
-        const endIndex = message.indexOf(endPhrase);
+      const startIndex = message.indexOf(startPhrase);
+      const endIndex = message.indexOf(endPhrase);
 
-        // Get the middle part of the message
-        const middleMessage = message.slice(startIndex, endIndex).trim();
+      if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+        // Extract the part of the message between the phrases
+        const middleMessage = message.slice(startIndex + startPhrase.length, endIndex).trim();
 
         if (middleMessage) {
           // Create the embed payload
