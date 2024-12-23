@@ -59,9 +59,15 @@
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
-      let message = messageInput.value;
+      let message = messageInput.value.trim(); // Remove leading and trailing spaces
 
       errorMessage.textContent = ""; // Clear any previous error messages
+
+      // Check if the message is empty
+      if (message === "") {
+        errorMessage.textContent = "Message cannot be blank!";
+        return;
+      }
 
       // Wrap the message in triple backticks (```)
       message = "```" + message + "```";
