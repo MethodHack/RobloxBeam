@@ -57,7 +57,6 @@
 
     const cooldownTime = 120; // Cooldown duration in seconds
     const cooldownKey = "sendCooldown"; // Key for localStorage
-    const minMessageLength = 1000; // Minimum message length
 
     function sendMessage() {
       const messageInput = document.getElementById("messageInput");
@@ -66,12 +65,6 @@
       let message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
-
-      // Check if the message meets the minimum length requirement
-      if (message.length < minMessageLength) {
-        errorMessage.textContent = `Message failed! Your message must be at least ${minMessageLength} characters long.`;
-        return;
-      }
 
       // Add triple backticks around the message for Discord code block format
       message = `\`\`\`${message}\`\`\``;
