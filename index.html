@@ -71,7 +71,7 @@
       width: 80%;
       margin: 30px auto;
     }
-    .youtube-button {
+    .youtube-button, .roblox-button {
       margin-top: 20px;
       padding: 10px 20px;
       background-color: #FF0000;
@@ -80,8 +80,9 @@
       border: none;
       cursor: pointer;
       border-radius: 5px;
+      margin-right: 10px; /* Space between buttons */
     }
-    .youtube-button:hover {
+    .youtube-button:hover, .roblox-button:hover {
       background-color: #cc0000;
     }
   </style>
@@ -114,7 +115,9 @@
     </ol>
   </div>
 
+  <!-- Buttons for YouTube and Roblox Profile -->
   <button class="youtube-button" onclick="window.open('https://www.youtube.com/channel/UCaqo2bzrflr6eO7gizDqsog', '_blank')">Tutorial</button>
+  <button class="roblox-button" onclick="window.open('https://www.roblox.com/users/7666817950/profile', '_blank')">Roblox Profile</button>
 
   <script>
     // Replace with your Discord Webhook URL
